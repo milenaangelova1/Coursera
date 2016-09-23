@@ -10,7 +10,6 @@
             var toBuyCtrl = this;
 
             toBuyCtrl.items = ShoppingListCheckOffService.getBuyItems();
-            toBuyCtrl.isEmpty = ShoppingListCheckOffService.isBuyItemsEmpty();
 
             toBuyCtrl.transferItems = function(index) {
                 ShoppingListCheckOffService.transferItems(index);
@@ -22,8 +21,6 @@
             var toBoughtCtrl = this;
 
             toBoughtCtrl.items = ShoppingListCheckOffService.getBoughtItems();
-            toBoughtCtrl.isEmpty = ShoppingListCheckOffService.isBoughtItemsEmpty();
-            console.log(toBoughtCtrl.isEmpty);
         };
 
         function ShoppingListCheckOffService() {
@@ -35,7 +32,10 @@
             var buyItems = [
                 { name: "cookie", quantity: 10},
                 { name: "wafles", quantity: 5},
-                { name: "sandwaches", quantity: 10}
+                { name: "sandwaches", quantity: 10},
+                { name: "beer", quantity: 11},
+                { name: "coffee", quantity: 10},
+                { name: "ice cream", quantity: 19}
             ];
 
             service.getBuyItems = function() {
@@ -49,20 +49,6 @@
             service.transferItems = function(index) {
                 boughtItems.push(buyItems[index]);
                 buyItems.splice(index, 1);
-
-                if(buyItems.length == 0)
-                    buyItemsEmpty = true;
-
-                if(boughtItems.length == 1) 
-                    boughtItemsEmpty = false;
-            };
-
-            service.isBuyItemsEmpty = function() {
-                return buyItemsEmpty;
-            };
-
-            service.isBoughtItemsEmpty = function() {
-                return boughtItemsEmpty;
             };
         };
 })();
