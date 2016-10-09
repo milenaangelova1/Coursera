@@ -1,54 +1,85 @@
 (function(){
 
-    angular.module('ShoppingListCheckOff', [])
-        .controller("ToBuyShoppingController", ToBuyShoppingController)
-        .controller("AlreadyBoughtShoppingController", AlreadyBoughtShoppingController)
-        .service("ShoppingListCheckOffService", ShoppingListCheckOffService);
+    angular.module('NarrowItDownApp', [])
+        .controller("NarrowItDownController", NarrowItDownController)
+        .service("MenuSearchService", MenuSearchService)
+        .constant("ApiBasePath", "http://davids-restaurant.herokuapp.com")
+        .directive("foundItems", FoundItems);
+        
+        NarrowItDownController.$inject = ['$scope','MenuSearchService'];
+        function NarrowItDownController($scope, MenuSearchService) {
+            var narrowCtrl = this;
 
-        ToBuyShoppingController.$inject = ['ShoppingListCheckOffService'];
-        function ToBuyShoppingController(ShoppingListCheckOffService) {
-            var toBuyCtrl = this;
+            narrowCtrl.shortName = '';
+            narrowCtrl.found = [];
+            narrowCtrl.errorMessage = false;
 
-            toBuyCtrl.items = ShoppingListCheckOffService.getBuyItems();
+            narrowCtrl.getMatchedMenuItems = function() {
+                var promise = MenuSearchService.getMatchedMenuItems(narrowCtrl.searchTerm);
+                
+                promise.then(function(response){
+                    if(response.length !== 0) {
+                        narrowCtrl.errorMessage = false;
+                        narrowCtrl.found = response;
+                    } else {
+                        narrowCtrl.errorMessage = true;
+                    }
+                })
+                .catch(function(error){
+                    console.log("Something went terribly wrong.");
+                    narrowCtrl.errorMessage = true;
+                });
+            };
 
-            toBuyCtrl.transferItems = function(index) {
-                ShoppingListCheckOffService.transferItems(index);
+            narrowCtrl.removeItem = function(itemIndex) {
+                narrowCtrl.found.splice(itemIndex, 1);
             };
         };
 
-        AlreadyBoughtShoppingController.$inject = ['ShoppingListCheckOffService'];
-        function AlreadyBoughtShoppingController(ShoppingListCheckOffService) {
-            var toBoughtCtrl = this;
-
-            toBoughtCtrl.items = ShoppingListCheckOffService.getBoughtItems();
-        };
-
-        function ShoppingListCheckOffService() {
+        MenuSearchService.$inject = ['$http', 'ApiBasePath'];
+        function MenuSearchService($http, ApiBasePath) {
             var service = this;
-            var boughtItems = [];
-            var buyItemsEmpty = '';
-            var boughtItemsEmpty = true;
 
-            var buyItems = [
-                { name: "cookie", quantity: 10},
-                { name: "wafles", quantity: 5},
-                { name: "sandwaches", quantity: 10},
-                { name: "beer", quantity: 11},
-                { name: "coffee", quantity: 10},
-                { name: "ice cream", quantity: 19}
-            ];
+           service.getMatchedMenuItems = function(searchTerm) {
+			return $http({
+				method: 'GET',
+				url: ApiBasePath + '/menu_items.json'
+			}).then(function (response) {
+				var data = response.data;
+			    var found = [];
 
-            service.getBuyItems = function() {
-                return buyItems;
-            };
+			    if(!searchTerm) {
+			    	return [];
+			    }
 
-            service.getBoughtItems = function() {
-                return boughtItems;
-            };
+			    for(var i in data.menu_items) {
+			    	var menuItem = data.menu_items[i];
+			    	if(menuItem.description.toLowerCase().indexOf(searchTerm) >= 0 
+			    		|| menuItem.name.toLowerCase().indexOf(searchTerm) >= 0) 
+			    	{
+			    		found.push(menuItem);
+			    	}
+			    }
+		    
+			    return found;
+			});
+		}
 
-            service.transferItems = function(index) {
-                boughtItems.push(buyItems[index]);
-                buyItems.splice(index, 1);
-            };
         };
+
+        function FoundItems(){
+            var ddo = {
+                templateUrl: 'list-items.html',
+                scope: {
+                    items: '<',
+                    onRemove: '&',
+                    errorMessage: '<'
+                },
+                controller: NarrowItDownController,
+                controllerAs: 'list',
+                bindToController: true 
+            };
+            return ddo;
+        };
+       
 })();
