@@ -6,8 +6,8 @@
         .constant("ApiBasePath", "http://davids-restaurant.herokuapp.com")
         .directive("foundItems", FoundItems);
         
-        NarrowItDownController.$inject = ['$scope','MenuSearchService'];
-        function NarrowItDownController($scope, MenuSearchService) {
+        NarrowItDownController.$inject = ['MenuSearchService'];
+        function NarrowItDownController(MenuSearchService) {
             var narrowCtrl = this;
 
             narrowCtrl.shortName = '';
@@ -16,10 +16,9 @@
 
             narrowCtrl.getMatchedMenuItems = function() {
                 var promise = MenuSearchService.getMatchedMenuItems(narrowCtrl.searchTerm);
-                
+                console.log(narrowCtrl.searchTerm);
                 promise.then(function(response){
-                    if(response.length !== 0) {
-                        narrowCtrl.errorMessage = false;
+                    if(response.length > 0) {
                         narrowCtrl.found = response;
                     } else {
                         narrowCtrl.errorMessage = true;
@@ -43,26 +42,16 @@
            service.getMatchedMenuItems = function(searchTerm) {
 			return $http({
 				method: 'GET',
-				url: ApiBasePath + '/menu_items.json'
+				url: (ApiBasePath + '/menu_items.json')
 			}).then(function (response) {
-				var data = response.data;
-			    var found = [];
-
-			    if(!searchTerm) {
-			    	return [];
-			    }
-
-			    for(var i in data.menu_items) {
-			    	var menuItem = data.menu_items[i];
-			    	if(menuItem.description.toLowerCase().indexOf(searchTerm) >= 0 
-			    		|| menuItem.name.toLowerCase().indexOf(searchTerm) >= 0) 
-			    	{
-			    		found.push(menuItem);
-			    	}
-			    }
-		    
-			    return found;
-			});
+				 var found = [];
+                for (var i = 0; i < response.data.menu_items.length; i++) {
+                    if (0 < response.data.menu_items[i].description.toLowerCase().indexOf(searchTerm.toLowerCase())) {
+                        found.push(response.data.menu_items[i]);
+                }
+            }
+            return found;
+            })
 		}
 
         };
