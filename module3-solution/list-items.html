@@ -1,9 +1,26 @@
-<ul>
-      <li ng-repeat="item in list.items">
-        ({{item.short_name}}) {{ item.description }}
-        <button ng-click="list.onRemove({index: $index});" class="btn btn-warning">Don't Want this One!</button>
-      </li>
-</ul>
-<div class="error" ng-if="list.errorMessage">
-  <strong style="color: red;">Nothing matches with the given search term!</strong>
+<table class="table table-hover" ng-hide="narrowCtrl.isEmpty">
+<thead>
+  <tr>
+    <th>#</th>
+    <th>Short name</th>
+    <th>Name</th>
+    <th>Description</th>
+    <th>&nbsp;</th>
+  </tr>
+</thead>
+<tbody>
+  <tr ng-repeat="item in narrowCtrl.found">
+    <td>{{ $index+1 }}</td>
+    <td>{{ item.short_name }}</td>
+    <td>{{ item.name }}</td>
+    <td>{{ item.description }}</td>
+    <td>
+      <button class="btn btn-default btn-xs pull-right" ng-click="narrowCtrl.onRemove({index: $index});">Don't want this one!</button>
+    </td>
+  </tr>
+</tbody>
+</table>
+
+<div class="alert alert-warning" ng-if="narrowCtrl.isEmpty && narrowCtrl.numberOfSearches > 0">
+  <strong>Nothing found!</strong>
 </div>

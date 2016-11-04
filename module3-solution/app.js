@@ -3,30 +3,36 @@
     angular.module('NarrowItDownApp', [])
         .controller("NarrowItDownController", NarrowItDownController)
         .service("MenuSearchService", MenuSearchService)
-        .constant("ApiBasePath", "http://davids-restaurant.herokuapp.com")
-        .directive("foundItems", FoundItems);
+        .directive("foundItems", FoundItems)
+        .constant("ApiBasePath", "http://davids-restaurant.herokuapp.com");
         
         NarrowItDownController.$inject = ['MenuSearchService'];
         function NarrowItDownController(MenuSearchService) {
             var narrowCtrl = this;
 
-            narrowCtrl.shortName = '';
             narrowCtrl.found = [];
-            narrowCtrl.errorMessage = false;
+            narrowCtrl.isEmpty = true;
+            narrowCtrl.numberOfSearches = 0;
 
-            narrowCtrl.getMatchedMenuItems = function() {
-                var promise = MenuSearchService.getMatchedMenuItems(narrowCtrl.searchTerm);
-                promise.then(function(response){
-                    if(response.length > 0) {
+            narrowCtrl.getMatchedMenuItems = function(searchTerm) {
+                narrowCtrl.numberOfSearches++;
+                if(searchTerm !== '') {
+                    narrowCtrl.found = [];
+                    var promise = MenuSearchService.getMatchedMenuItems(searchTerm);
+                    promise.then(function(response){
                         narrowCtrl.found = response;
-                    } else {
-                        narrowCtrl.errorMessage = true;
-                    }
-                })
-                .catch(function(error){
-                    console.log("Something went terribly wrong.");
-                    narrowCtrl.errorMessage = true;
-                });
+                        if(narrowCtrl.found.length === 0)
+                            narrowCtrl.isEmpty = true;
+                        else
+                            narrowCtrl.isEmpty = false;
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
+                }
+                else {
+                    narrowCtrl.isEmpty = true;
+                }
             };
 
             narrowCtrl.removeItem = function(itemIndex) {
@@ -39,32 +45,37 @@
             var service = this;
 
            service.getMatchedMenuItems = function(searchTerm) {
-			return $http({
-				method: 'GET',
-				url: (ApiBasePath + '/menu_items.json')
-			}).then(function (response) {
-				 var found = [];
-                for (var i = 0; i < response.data.menu_items.length; i++) {
-                    if (0 < response.data.menu_items[i].description.toLowerCase().indexOf(searchTerm.toLowerCase())) {
-                        found.push(response.data.menu_items[i]);
+               var totalItems = [];
+               var foundItems = [];
+
+                return $http({
+                    method: 'GET',
+                    url: (ApiBasePath + '/menu_items.json')
+                }).then(function (response) {
+                    totalItems = response.data.menu_items;
+            
+                    for (var i = 0; i < totalItems.length; i++) {
+                        var name = totalItems[i].name;
+                        if (name.toLowerCase().indexOf(searchTerm)!== -1) {
+                            foundItems.push(totalItems[i]);
+                    }
                 }
-            }
-            return found;
+                return foundItems;
             })
 		}
-
         };
 
         function FoundItems(){
             var ddo = {
                 templateUrl: 'list-items.html',
                 scope: {
-                    items: '<',
+                    found: '<',
+                    isEmpty: '<',
                     onRemove: '&',
-                    errorMessage: '<'
+                    numberOfSearches: '<'
                 },
                 controller: NarrowItDownController,
-                controllerAs: 'list',
+                controllerAs: 'narrowCtrl',
                 bindToController: true 
             };
             return ddo;
