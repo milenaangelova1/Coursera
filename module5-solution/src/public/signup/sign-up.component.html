@@ -1,0 +1,105 @@
+<div class="container">
+	<div class="row">
+		<form class="form-horizontal" name='signUpForm' novalidate>
+
+		        <div class="form-group">
+			        <label class="control-label col-sm-2" for="firstname">First name:</label>
+			        <div class="col-sm-9">
+				        <input class="form-control" id="firstname" type="text" name="firstname" placeholder="Enter your first name"
+				          ng-model="$ctrl.user.firstname"
+				          required
+				          minlength="2"
+				          ng-maxlength="20">
+
+				          <span
+				            ng-if="(signUpForm.firstname.$error.minlength || signUpForm.firstname.$error.required) && signUpForm.firstname.$touched">
+				            Tour first name must be at least 2 characters long
+				          </span>
+				          <span ng-if="signUpForm.firstname.$error.maxlength && signUpForm.firstname.$touched">
+				            Your first name must not be longer than 20 characters
+				          </span>		        	
+			        </div>
+		        </div>
+
+		        <div class="form-group">
+			        <label class="control-label col-sm-2" for="lastname">Last name:</label>
+			        <div class="col-sm-9">
+				        <input class="form-control" id="lastname" type="text" name="lastname" placeholder="Enter your last name"
+				          ng-model="$ctrl.user.lastname"
+				          required
+				          minlength="2"
+				          ng-maxlength="20">
+
+				          <span
+				            ng-if="(signUpForm.lastname.$error.minlength || signUpForm.lastname.$error.required) && signUpForm.lastname.$touched">
+				            Tour last name must be at least 2 characters long
+				          </span>
+				          <span ng-if="signUpForm.lastname.$error.maxlength && signUpForm.lastname.$touched">
+				            Your last name must not be longer than 20 characters
+				          </span>
+			        </div>
+		         </div>
+
+				<div class="form-group">
+					<label class="control-label col-sm-2" for="email">Email:</label>
+					<div class="col-sm-9">
+						<input class="form-control" id="email" type="email" name="email" placeholder="E-mail"
+						  ng-model="$ctrl.user.email"
+						  required>
+
+						  <span ng-if="signUpForm.email.$invalid && signUpForm.email.$touched">
+						    Must be a valid email address: handle@domain format
+						  </span>
+			        </div>
+				</div>
+
+				<div class="form-group">
+					<label class="control-label col-sm-2" for="phone">Phone:</label>
+					<div class="col-sm-9">
+						<input class="form-control" type="text" name="phone" placeholder="Phone ###-###-####"
+						  ng-model="$ctrl.user.phone"
+						  pattern="(\d{3})-(\d{3})-(\d{4})">
+
+					  	  <span ng-if="signUpForm.phone.$invalid && signUpForm.phone.$touched">
+						    Phone must be in the format ###-###-####.
+						  </span>
+			        </div>
+				</div>
+
+		        <div class="form-group">
+			        <label class="control-label col-sm-2" for="favorite">Favorite dish:</label>
+			        <div class="col-sm-4">
+				        <input class="form-control" id="favorite" type="text" name="favorite" placeholder="Your favourite dish number"
+				          ng-model="$ctrl.user.favorite"
+				          required>
+
+				          <span
+				          	ng-if="$ctrl.isDishNotFound">
+				          	No such menu number exists
+				          </span>
+			        </div>
+		         </div>
+
+		         <div class="form-group">
+		         	<div class="col-sm-offset-2 col-sm-10">
+			         	<button class="form-group btn btn-default" style="margin-left: 0;"
+				           ng-disabled="signUpForm.$invalid"
+				           ng-click="$ctrl.submit()">Submit</button>	
+		         	</div>         	
+		         </div>
+<!--
+		         <div class="form-group" style="margin-top: 10px;">
+		           Form valid? {{ signUpForm.$valid }}
+		         </div>
+-->
+		         <div class="form-group" style="height: 50px;">
+		         	<div class="col-sm-offset-2 col-sm-6" ng-if="$ctrl.isSaved">
+		         		<div class="alert alert-success">
+		         			<strong>Your information has been saved!</strong>
+		         		</div>
+		         	</div>
+		         </div>
+
+		</form>
+	</div>
+</div>

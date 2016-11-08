@@ -1,0 +1,43 @@
+<div class="container">
+	<div class="row" ng-if="$ctrl.userExists">
+
+		<div class="my-label col-sm-2">First name:</div>
+		<div class="col-sm-10">
+			<strong>{{$ctrl.user.firstname}}</strong>
+		</div>
+
+		<div class="my-label col-sm-2">Last name:</div>
+		<div class="col-sm-10">
+			<strong>{{$ctrl.user.lastname}}</strong>
+		</div>
+		
+		<div class="my-label col-sm-2">Email:</div>
+		<div class="col-sm-10">
+			<strong>{{$ctrl.user.email}}</strong>
+		</div>
+
+		<div class="my-label col-sm-2">Phone:</div>
+		<div class="col-sm-10">
+			<strong>{{$ctrl.user.phone}}</strong>
+			<span ng-if="!$ctrl.user.phone">-</span>
+		</div>
+
+		<div class="my-label col-sm-2">Favorite dish:</div>
+		<div class="col-sm-10">
+			<strong>{{$ctrl.menu.short_name}} - {{$ctrl.menu.name}}</strong>
+			<br>
+			<p style="text-transform: capitalize;">{{$ctrl.menu.description}}</p>
+		</div>
+
+		<div class="col-sm-offset-2 col-sm-10">
+			<img class="my-favorite-menu" ng-src="{{$ctrl.basePath}}/images/{{$ctrl.user.favorite}}.jpg">
+		</div>
+
+	</div>
+
+	<div class="row" ng-if="!$ctrl.userExists">
+		<div class="text-center">
+			<p><br>Not Signed Up Yet. <a ui-sref="public.signup">Sign up Now!</a></p>
+		</div>
+	</div>
+</div>

@@ -4,7 +4,7 @@
 
 angular.module('public')
 .service('MenuSearchService', MenuSearchService)
-.constant('ApiBasePath', "https://digsi.herokuapp.com/");
+.constant('ApiBasePath', "https://digsi-restaurant-server.herokuapp.com");
 
 MenuSearchService.$inject = ['$http', 'ApiBasePath'];
 function MenuSearchService($http, ApiBasePath) {
